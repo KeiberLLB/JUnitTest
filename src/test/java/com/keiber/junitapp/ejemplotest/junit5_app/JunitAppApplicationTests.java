@@ -2,7 +2,10 @@ package com.keiber.junitapp.ejemplotest.junit5_app;
 
 import java.math.BigDecimal;
 
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+// el static es indispensable
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.keiber.junitapp.ejemplotest.junit5_app.exceptions.DineroInsuficienteException;
@@ -12,13 +15,21 @@ import com.keiber.junitapp.ejemplotest.junit5_app.models.Cuenta;
 class JunitAppApplicationTests {
 
 	@Test
+	@Disabled // deshabilitar el test, no se ejecuta
+	@DisplayName("probando nombre de la cuenta")
 	void testNombreCuenta() {
+		fail();//forzar el error
 		Cuenta cuenta = new Cuenta("Andres", new BigDecimal("1000.12345"));
 		// cuenta.setPersona("Andres");
 		String esperado = "Andres";
 		String real = cuenta.getPersona();
-		assertEquals(esperado, real);
-		assertTrue(real.equals("Andres"));
+		// el mensaje de error se pasa en expresion lambda para que el mensaje no se
+		// construya inmediatamente, solo se construira y creara el string del error
+		// cuando sea necesario
+		assertNotNull(real, () -> "la cuenta no puede ser nula");
+		assertEquals(esperado, real,
+				() -> "el nombre de la cuenta no es el que se esperaba: se esperaba: " + esperado + " sin embargo fue " + real);
+		assertTrue(real.equals("Andres"), () -> "nombre cuenta esperada debe ser igual a la real");
 	}
 
 	@Test
