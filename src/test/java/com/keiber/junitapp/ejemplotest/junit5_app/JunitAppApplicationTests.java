@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.keiber.junitapp.ejemplotest.junit5_app.exceptions.DineroInsuficienteException;
+import com.keiber.junitapp.ejemplotest.junit5_app.models.Banco;
 import com.keiber.junitapp.ejemplotest.junit5_app.models.Cuenta;
 
 class JunitAppApplicationTests {
@@ -72,4 +73,53 @@ class JunitAppApplicationTests {
 		assertEquals(esperado, actual);
 	}
 
+	@Test
+	void testTransferirDineroCuentas() {
+		Cuenta cuenta1 = new Cuenta("Jhon Doe", new BigDecimal("2500"));
+		Cuenta cuenta2 = new Cuenta("Andres", new BigDecimal("1500.8989"));
+		Banco banco = new Banco();
+		banco.setNombre("Banco del Estado");
+		banco.transferir(cuenta2, cuenta1, new BigDecimal(500));
+		assertEquals("1000.8989", cuenta2.getSaldo().toPlainString());
+		assertEquals("3000", cuenta1.getSaldo().toPlainString());
+	}
+
+	@Test
+	void testClonAnterior() {
+		Cuenta cuenta1 = new Cuenta("Jhon Doe", new BigDecimal("2500"));
+		Cuenta cuenta2 = new Cuenta("Andres", new BigDecimal("1500.8989"));
+
+		Banco banco = new Banco();
+		banco.addCuenta(cuenta1);
+		banco.addCuenta(cuenta2);
+
+		banco.setNombre("Banco del Estado");
+		banco.transferir(cuenta2, cuenta1, new BigDecimal(500));
+
+		assertAll(() -> {
+			assertEquals("1000.8989", cuenta2.getSaldo().toPlainString());
+		},
+				() -> {
+					assertEquals("3000", cuenta1.getSaldo().toPlainString());
+				},
+				() -> {
+					assertEquals(2, banco.getCuentas().size());
+				}, () -> {
+					assertEquals("Banco del Estado", cuenta1.getBanco().getNombre());
+				}, () -> {
+					assertEquals("Andres", banco.getCuentas().stream()
+							.filter(c -> c.getPersona()
+									.equals("Andres"))
+							.findFirst().get().getPersona());
+				}, () -> {
+					assertTrue(banco.getCuentas().stream()
+							.filter(c -> c.getPersona()
+									.equals("Andres"))
+							.findFirst().isPresent());
+				}, () -> {
+					assertTrue(banco.getCuentas().stream()
+							.anyMatch(c -> c.getPersona()
+									.equals("Jhon Doe")));
+				});
+	}
 }

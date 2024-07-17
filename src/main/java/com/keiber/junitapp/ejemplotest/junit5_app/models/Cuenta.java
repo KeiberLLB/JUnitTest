@@ -7,6 +7,7 @@ import com.keiber.junitapp.ejemplotest.junit5_app.exceptions.DineroInsuficienteE
 public class Cuenta {
   private String persona;
   private BigDecimal saldo;
+  private Banco banco;
 
   public Cuenta(String persona, BigDecimal saldo) {
     this.persona = persona;
@@ -50,5 +51,14 @@ public class Cuenta {
       return false;
     return this.persona.equals(c.getPersona()) && this.saldo.equals(c.getSaldo());
   }
+
+  public Banco getBanco() {
+    return banco;
+  }
+
+  public void setBanco(Banco banco) {
+    this.banco = banco;
+  }
+
 
 }
